@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="./assets/css/style.css">
+        <title>Game Sonic</title>
+    </head>
+    <body>
+
+        <section id="container"> 
+
+            <h1>Sonic Race</h1>
+
+            <div id="Game">
+            
+                <div id="inicio" onclick="start()">
+                    <img class="img-inicio" src="./assets/img/destaque_sonic.gif" alt="Game_Sonic" >                    <div class="tutorial">
+                        
+                        <p class="text-tutorial"> Clique para iniciar </p>
+                    </div>
+                </div>
+                <div>
+                    <img id="sonic" src="./assets/img/sonic.gif" alt="sonic">
+                </div>
+                <div>
+                    <img id="robotnik" src="./assets/img/robotnik.gif" alt="robotnik">
+                </div>
+                <div>
+                    <img id="butterdroid" src="./assets/img/butterdroid.gif" alt="butterdroid">
+                </div>
+                <div>
+                    <img id="crab" src="./assets/img/crab.gif" alt="crab">
+                </div>
+
+                <div class="placar">
+                    <div class="container-score">
+                        <img class="img-score" src="./assets/img/score.png" alt="score">
+                        <span class="score"></span>
+                    </div>
+                </div>
+
+            </div>
+            <a href="#"  style="z-index:1009;left:5px;bottom:1;position: absolute;font-size:20px;"  onClick="alert('Comandos no computador:\n\n click = play \n\n W = Pular \n\n S = Abaixar')">Tutorial</a><a href="#"  style="z-index:1009;right:0px;bottom:0;position: absolute;font-size:10px;"></a>
+ 
+            <audio src="./assets/sounds/song_sonic.mp3" preload="auto" id="musica"></audio>
+            <audio src="./assets/sounds/Sonic_Jump.mp3" preload="auto" id="somJump"></audio>
+            <audio src="./assets/sounds/Sonic_Game_Over.mp3" preload="auto" id="gameOver"></audio>
+            
+
+        </section>
+    
+    
+    <script src="./assets/js/jquery-1.11.1.min.js"></script>
+    <script src="./assets/js/main.js" defer></script>
+
+    </body>
+<footer class="footer">
+    <h3 class="text-footer">© 2022 Copyright</h3>
+    <h3 class="text-footer">Desenvolvido por Ana Caroline Vasconcellos e Tassio Stavale</h3>
+</footer>
+</html>

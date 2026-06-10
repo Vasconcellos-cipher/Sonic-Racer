@@ -1,0 +1,215 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a{
+  color: #FFF;
+}
+h1 {
+  text-align: center;
+	font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+	font-size:40px;
+	color:#ffff;
+  height: 60px;
+
+}
+
+body {
+	background-color: blue;
+}
+
+#container{
+	width:850px;
+	height:auto;
+	position:relative;
+  margin: 5px auto 0 auto;
+  
+}
+
+#Game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+	width:848px;
+	height:528px;
+  background-repeat: repeat-x;
+	background-image:url(../img/background.png);
+	border-color:rgb(255, 255, 255);
+  animation: slideright 600s infinite linear;
+  -webkit-animation: slideright 600s infinite linear;
+	border-style:solid;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes slideright {
+  from {
+      background-position: 70000%;
+  }
+  to {
+      background-position: 0%;
+  }
+}
+
+@-webkit-keyframes slideright {
+  from {
+      background-position: 70000%;
+  }
+  to {
+      background-position: 0%;
+  }
+}
+
+#inicio {
+  display: flex;
+  flex-direction: column;
+	width:0;
+	height:208px;
+}
+
+.img-inicio {
+  width: 900px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.tutorial {
+  position: absolute;
+  top: 370px;
+  left: 290px;
+  z-index: 110;
+  
+}
+
+.tutorial:hover {
+  cursor: pointer;
+ 
+}
+
+.text-tutorial {
+  margin: 50px;
+  padding: 10px;
+  color: #FFF;
+  font-weight: bold;
+  background-color:rgba(104, 102, 231, 0.986);
+	text-align: center;
+  border-radius: 8px;
+  border: 3px solid rgb(255, 255, 255);
+}
+
+#sonic {
+  width: 180px;
+  height: 180px;
+  bottom: 20px;
+  left: 35px;
+  position: absolute;
+
+}
+
+.jump {
+  animation: jump-animation 0.8s linear;
+}
+
+#butterdroid {
+  position: absolute;
+  width: 100px;
+  bottom: 110px;
+  animation: butterdroid-animation 2s infinite linear;
+  
+  }
+
+  #robotnik {
+    position: absolute;
+    width: 120px;
+    bottom: 50px;
+    animation: robotnik-animation 6s infinite linear;
+    
+    }
+
+    @keyframes robotnik-animation {
+      from {
+        right: -3200px;
+      }
+    
+      to {
+        right: 100%;
+      }
+    }
+
+#crab {
+  position: absolute;
+  bottom: 45px;
+  width: 100px;  
+  animation: crab-animation 2s infinite linear;
+}
+
+@keyframes butterdroid-animation {
+  from {
+    right: -100px;
+  }
+
+  to {
+    right: 100%;
+  }
+}
+
+@keyframes crab-animation {
+  from {
+    right: -100px;
+  }
+
+  to {
+    right: 100%;
+  }
+}
+
+@keyframes jump-animation {
+  
+  0% {
+    bottom: 0px;
+  }
+  30% {
+    bottom: 100px;
+  }
+  50% {
+    bottom: 150px; 
+  }
+  80% {
+    bottom: 100px;
+  }
+  100% {
+    bottom: 0px;
+  }
+}
+.placar {
+  position: absolute;
+  top: 30px;
+  right: 60px;
+}
+
+.container-score{
+  display: flex;
+  justify-content: center;
+  
+}
+
+.score {
+  color: #ffff;
+  font-size: 35px;
+}
+
+
+
+.text-footer {
+  display: flex;
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  justify-content: center;
+  margin-top: 2px;
+  color: rgb(255, 255, 255);
+}
