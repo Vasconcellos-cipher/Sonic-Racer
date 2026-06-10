@@ -1,1 +1,1 @@
-# Game of SONIC
+# Sonic Racer
