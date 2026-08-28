@@ -8,7 +8,7 @@ An endless runner and 2D action game inspired by classic 16-bit Mega Drive title
 
 ### Option 1: Standalone Download (No Python Required)
 Download and play directly on Windows via GitHub Releases:
-👉 **[Download SonicRace.exe (Latest Release)](https://github.com/Vasconcello--cipher/Sonic-Racer/releases)**
+👉 **[Download SonicRace.exe (Latest Release)](https://github.com/Vasconcellos-cipher/Sonic-Racer/releases)**
 
 ### Option 2: Run from Source Code (Developers)
 ```bash
