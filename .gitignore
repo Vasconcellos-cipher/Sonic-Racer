@@ -1,0 +1,23 @@
+# Ambientes Virtuais
+venv/
+env/
+ENV/
+
+# Caches do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pastas de Compilação e Builds
+build/
+dist/
+*.dist/
+*.build/
+*.onefile-build/
+*.spec
+
+# IDEs e Sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
