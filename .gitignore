@@ -1,6 +1,0 @@
-.venv/
-env/
-venv/
-__pycache__/
-*.pyc
-security_dump_*.json
