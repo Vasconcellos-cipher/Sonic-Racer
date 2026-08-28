@@ -1,6 +1,3 @@
-Aqui está o **`README.md`** completo e corrigido, apontando todas as 8 imagens exatamente para a pasta **`assets/img/`** com sintaxe nativa do Markdown (`![]()`) e layout de tabela para renderizar perfeitamente no GitHub:
-
-```markdown
 # 🦔 Sonic Race Remastered (v1.0.0)
 
 An endless runner and 2D action game inspired by classic 16-bit Mega Drive titles, developed in **Python** and **Pygame**. Dodge Badniks, collect golden rings, defeat enemies with Spin Jump attacks, and compete for a spot in the Top 3 Arcade Hall of Fame!
@@ -92,16 +89,5 @@ python main.py
 ## 📦 License & Credits
 
 Developed for educational and portfolio purposes. Character designs, sprites, and audio belong to © SEGA / Sonic the Hedgehog.
-
-```
-
----
-
-### Para enviar ao GitHub:
-
-```powershell
-git add README.md assets/img/
-git commit -m "docs: fix image paths in README to assets/img"
-git push
 
 ```
