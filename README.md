@@ -90,4 +90,3 @@ python main.py
 
 Developed for educational and portfolio purposes. Character designs, sprites, and audio belong to © SEGA / Sonic the Hedgehog.
 
-```
