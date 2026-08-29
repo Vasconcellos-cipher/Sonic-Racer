@@ -1,30 +1,41 @@
 import os
+import sys
 import pygame
 from PIL import Image, ImageSequence
+
+
+def resource_path(relative_path):
+    """Garante o carregamento das imagens tanto no VS Code quanto dentro do .exe PyInstaller."""
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        
 
-        run_path = os.path.join("assets", "img", "sonic.gif")
+        # 1. Animação Correndo
+        run_path = resource_path(os.path.join("assets", "img", "sonic.gif"))
         self.run_frames = self._load_gif_frames(run_path, (175, 160))
-        
+
         # 2. Frames de Giro no Pulo
-        spin_path = os.path.join("assets", "img", "girando.gif")
+        spin_path = resource_path(os.path.join("assets", "img", "girando.gif"))
         if not os.path.exists(spin_path):
-            spin_path = os.path.join("assets", "img", "destaque_sonic.gif")
-            
+            spin_path = resource_path(os.path.join("assets", "img", "destaque_sonic.gif"))
+
         if os.path.exists(spin_path):
             self.spin_frames = self._load_gif_frames(spin_path, (140, 140))
         else:
             self.spin_frames = self.run_frames
-        
+
         # 3. Sprite Abaixado
-        duck_path = os.path.join("assets", "img", "sonic-down.png")
+        duck_path = resource_path(os.path.join("assets", "img", "sonic-down.png"))
         if not os.path.exists(duck_path):
-            duck_path = os.path.join("assets", "img", "abaixa.png")
-            
+            duck_path = resource_path(os.path.join("assets", "img", "abaixa.png"))
+
         if os.path.exists(duck_path):
             self.duck_image = pygame.image.load(duck_path).convert_alpha()
             self.duck_image = pygame.transform.scale(self.duck_image, (145, 105))
@@ -32,7 +43,7 @@ class Player(pygame.sprite.Sprite):
             self.duck_image = pygame.transform.scale(self.run_frames[0], (145, 100))
 
         # 4. Sprite Dano
-        hit_path = os.path.join("assets", "img", "contato-sonic.png")
+        hit_path = resource_path(os.path.join("assets", "img", "contato-sonic.png"))
         if os.path.exists(hit_path):
             self.hit_image = pygame.image.load(hit_path).convert_alpha()
             self.hit_image = pygame.transform.scale(self.hit_image, (130, 130))
@@ -43,17 +54,17 @@ class Player(pygame.sprite.Sprite):
         self.animation_speed = 0.28
         self.image = self.run_frames[0]
         self.mask = pygame.mask.from_surface(self.image)
-        
+
         # Nível do Chão Calibrado para 720p de altura
         self.ground_stand = 680
         self.ground_duck = 650
         self.ground_y = self.ground_stand
-        
+
         self.rect = self.image.get_rect()
         self.rect.x = 100
         self.rect.bottom = self.ground_y
 
-        # Física Proporcional ao Tamanho Maior
+        # Física do Personagem
         self.vel_y = 0
         self.gravity = 0.90
         self.jump_power = -21.0
@@ -77,7 +88,7 @@ class Player(pygame.sprite.Sprite):
                 frames.append(surf)
         except Exception:
             surf = pygame.Surface(size, pygame.SRCALPHA)
-            pygame.draw.circle(surf, (0, 0, 255), (size[0]//2, size[1]//2), size[0]//2)
+            pygame.draw.circle(surf, (0, 0, 255), (size[0] // 2, size[1] // 2), size[0] // 2)
             frames.append(surf)
         return frames
 
@@ -139,6 +150,17 @@ class Player(pygame.sprite.Sprite):
                 self.vel_y = 0
             return
 
+        # Aplica gravidade e movimento vertical
+        self.vel_y += self.gravity
+        self.rect.y += self.vel_y
+
+        # Checagem de colisão com o chão
+        if self.rect.bottom >= self.ground_y:
+            self.rect.bottom = self.ground_y
+            self.vel_y = 0
+            self.is_jumping = False
+
+        # Animações
         if self.is_jumping:
             self.current_frame += 0.35
             if self.current_frame >= len(self.spin_frames):
@@ -151,13 +173,8 @@ class Player(pygame.sprite.Sprite):
             self.current_frame += self.animation_speed
             if self.current_frame >= len(self.run_frames):
                 self.current_frame = 0
+            old_x = self.rect.x
             self.image = self.run_frames[int(self.current_frame)]
+            # Trava o pé do Sonic na superfície exata da grama (680)
+            self.rect = self.image.get_rect(bottomleft=(old_x, self.ground_stand))
             self.mask = pygame.mask.from_surface(self.image)
-
-        self.vel_y += self.gravity
-        self.rect.y += self.vel_y
-
-        if self.rect.bottom >= self.ground_y:
-            self.rect.bottom = self.ground_y
-            self.vel_y = 0
-            self.is_jumping = False

@@ -8,6 +8,16 @@ from src.collectibles import Ring, Signpost
 from src.enemies import Obstacle
 from src.player import Player
 
+
+def resource_path(relative_path):
+    """Retorna o caminho absoluto tanto em desenvolvimento quanto no executável PyInstaller."""
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
 pygame.init()
 pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
 
@@ -35,26 +45,11 @@ LANG_DATA = {
         "name_prompt_vic": "INSIRA SEU NOME PARA O HALL DA FAMA:",
         "opts_vic": "[ENTER] Confirmar   |   [R] Jogar Novamente",
         "instructions": [
-            (
-                "[ESPAÇO] / [W] / [SETA CIMA]",
-                "Pular (Segure para pular mais alto)",
-            ),
-            (
-                "[S] / [SETA BAIXO]",
-                "Abaixar para desviar de inimigos voadores",
-            ),
-            (
-                "ATAQUE GIRATÓRIO",
-                "Pule em cima dos Badniks para destruí-los (+100 pts)",
-            ),
-            (
-                "ANÉIS DOURADOS",
-                "Protegem você contra 1 dano. Colete para pontuar!",
-            ),
-            (
-                "[ESC] / [P]",
-                "Pausar a partida / Acessar opções a qualquer momento",
-            ),
+            ("[ESPAÇO] / [W] / [SETA CIMA]", "Pular (Segure para pular mais alto)"),
+            ("[S] / [SETA BAIXO]", "Abaixar para desviar de inimigos voadores"),
+            ("ATAQUE GIRATÓRIO", "Pule em cima dos Badniks para destruí-los (+100 pts)"),
+            ("ANÉIS DOURADOS", "Protegem você contra 1 dano. Colete para pontuar!"),
+            ("[ESC] / [P]", "Pausar a partida / Acessar opções a qualquer momento"),
             ("META FINAL", "Alcance 10.000 pontos para cruzar a placa e vencer!"),
         ],
     },
@@ -86,7 +81,7 @@ LANG_DATA = {
 }
 
 # --- ÁUDIOS ---
-sound_dir = os.path.join("assets", "sounds")
+sound_dir = resource_path(os.path.join("assets", "sounds"))
 path_opening = os.path.join(sound_dir, "Sonic_opening_theme.mp3")
 path_stage = os.path.join(sound_dir, "song_sonic.mp3")
 path_gameover = os.path.join(sound_dir, "Sonic_Game_Over.mp3")
@@ -152,9 +147,7 @@ def load_save_data():
         try:
             with open(SAVE_PATH, "r") as f:
                 data = json.load(f)
-                return data.get("top_scores", default_scores), data.get(
-                    "lang", "PT"
-                )
+                return data.get("top_scores", default_scores), data.get("lang", "PT")
         except Exception:
             pass
     return default_scores, "PT"
@@ -180,33 +173,27 @@ def save_lang_pref(lang):
         json.dump({"top_scores": scores, "lang": lang}, f, indent=4)
 
 
-# Carrega preferência inicial de idioma
 _, current_lang = load_save_data()
 
-menu_gif_path = os.path.join("assets", "img", "destaque_sonic.gif")
+menu_gif_path = resource_path(os.path.join("assets", "img", "destaque_sonic.gif"))
 menu_frames = []
 if os.path.exists(menu_gif_path):
-    pil_menu = Image.open(menu_gif_path)
-    for frame in ImageSequence.Iterator(pil_menu):
-        frame_rgba = frame.convert("RGBA")
-        surf = pygame.image.fromstring(
-            frame_rgba.tobytes(), frame_rgba.size, "RGBA"
-        )
-        surf = pygame.transform.scale(surf, (540, 310))
-        menu_frames.append(surf)
+    try:
+        pil_menu = Image.open(menu_gif_path)
+        for frame in ImageSequence.Iterator(pil_menu):
+            frame_rgba = frame.convert("RGBA")
+            surf = pygame.image.fromstring(frame_rgba.tobytes(), frame_rgba.size, "RGBA")
+            surf = pygame.transform.scale(surf, (540, 310))
+            menu_frames.append(surf)
+    except Exception:
+        pass
 
-img_dir = os.path.join("assets", "img")
-available_files = (
-    os.listdir(img_dir) if os.path.exists(img_dir) else ["background.png"]
-)
+img_dir = resource_path(os.path.join("assets", "img"))
+available_files = os.listdir(img_dir) if os.path.exists(img_dir) else []
 bg_files = [
-    f
-    for f in available_files
-    if ("background" in f.lower() or "green_hill" in f.lower())
-    and f.endswith((".png", ".jpg"))
+    f for f in available_files
+    if ("background" in f.lower() or "green_hill" in f.lower()) and f.endswith((".png", ".jpg"))
 ]
-if not bg_files:
-    bg_files = ["background.png"]
 
 bgs = []
 for bg_name in sorted(bg_files):
@@ -217,11 +204,17 @@ for bg_name in sorted(bg_files):
         bgs.append(surf)
     except Exception:
         pass
-if len(bgs) == 1:
+
+# Garante fallback se nenhum background carregar (evita divisão por zero)
+if not bgs:
+    fallback_surf = pygame.Surface((WIDTH, HEIGHT))
+    fallback_surf.fill((20, 30, 70))
+    bgs = [fallback_surf, fallback_surf]
+elif len(bgs) == 1:
     bgs.append(bgs[0])
 
 current_bg_idx = 0
-next_bg_idx = 1
+next_bg_idx = 1 if len(bgs) > 1 else 0
 bg_x_far = 0
 
 is_transitioning = False
@@ -275,7 +268,8 @@ def reset_game():
     input_name = ""
     next_bg_score_target = BG_CHANGE_INTERVAL
     current_bg_idx = 0
-    next_bg_idx = 1 % len(bgs)
+    total_bgs = max(1, len(bgs))
+    next_bg_idx = 1 % total_bgs
     is_transitioning = False
     transition_alpha = 0.0
     signpost_spawned = False
@@ -322,11 +316,7 @@ while running:
 
             elif state == "PLAYING":
                 if event.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
-                    if (
-                        not player.is_jumping
-                        and not player.is_ducking
-                        and snd_jump
-                    ):
+                    if not player.is_jumping and not player.is_ducking and snd_jump:
                         snd_jump.play()
                     player.jump()
                 if event.key in (pygame.K_DOWN, pygame.K_s):
@@ -349,20 +339,12 @@ while running:
                 if event.key == pygame.K_BACKSPACE:
                     input_name = input_name[:-1]
                 elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
-                    final_score = (
-                        score + (player.rings * 100)
-                        if state == "VICTORY"
-                        else score
-                    )
+                    final_score = score + (player.rings * 100) if state == "VICTORY" else score
                     save_score(final_score, input_name or "AAA", current_lang)
                     state = "MENU"
                     play_music(path_opening, loop=-1, volume=0.6)
                 elif event.key == pygame.K_r:
-                    final_score = (
-                        score + (player.rings * 100)
-                        if state == "VICTORY"
-                        else score
-                    )
+                    final_score = score + (player.rings * 100) if state == "VICTORY" else score
                     save_score(final_score, input_name or "AAA", current_lang)
                     reset_game()
                 elif event.key == pygame.K_ESCAPE:
@@ -390,7 +372,8 @@ while running:
         if score >= next_bg_score_target and not is_transitioning:
             is_transitioning = True
             transition_alpha = 0.0
-            next_bg_idx = (current_bg_idx + 1) % len(bgs)
+            total_bgs = max(1, len(bgs))
+            next_bg_idx = (current_bg_idx + 1) % total_bgs
             next_bg_score_target += BG_CHANGE_INTERVAL
 
         if is_transitioning:
@@ -663,7 +646,7 @@ while running:
             )
             total_bonus = score + (player.rings * 100)
             bonus_text = font_hud.render(
-                f"{T['rings_bonus']}: {player.rings * 100}  |  {T['total_label']}: {total_bonus}",
+                f"{T['rings_bonus']}: {player.rings * 100}   |   {T['total_label']}: {total_bonus}",
                 True,
                 (255, 255, 255),
             )
