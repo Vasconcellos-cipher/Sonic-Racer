@@ -55,7 +55,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.run_frames[0]
         self.mask = pygame.mask.from_surface(self.image)
 
-        # Nível do Chão Calibrado para 720p de altura
+        # Nível do Chão Calibrado
         self.ground_stand = 680
         self.ground_duck = 650
         self.ground_y = self.ground_stand
@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = 100
         self.rect.bottom = self.ground_y
 
-        # Física do Personagem
+        # Física
         self.vel_y = 0
         self.gravity = 0.90
         self.jump_power = -21.0
@@ -106,7 +106,7 @@ class Player(pygame.sprite.Sprite):
             self.is_ducking = True
             self.ground_y = self.ground_duck
             self.image = self.duck_image
-            self.rect = self.image.get_rect(bottomleft=(self.rect.x, self.ground_y))
+            self.rect = self.image.get_rect(bottomleft=(100, self.ground_y))
             self.mask = pygame.mask.from_surface(self.image)
 
     def stand_up(self):
@@ -114,7 +114,7 @@ class Player(pygame.sprite.Sprite):
             self.is_ducking = False
             self.ground_y = self.ground_stand
             self.image = self.run_frames[int(self.current_frame)]
-            self.rect = self.image.get_rect(bottomleft=(self.rect.x, self.ground_y))
+            self.rect = self.image.get_rect(bottomleft=(100, self.ground_y))
             self.mask = pygame.mask.from_surface(self.image)
 
     def take_hit(self):
@@ -129,7 +129,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.is_hit = True
             self.image = self.hit_image
-            self.rect = self.image.get_rect(bottomleft=(self.rect.x, self.ground_y))
+            self.rect = self.image.get_rect(bottomleft=(100, self.ground_y))
             self.vel_y = -11
             self.mask = pygame.mask.from_surface(self.image)
             return True
@@ -145,36 +145,42 @@ class Player(pygame.sprite.Sprite):
         if self.is_hit:
             self.vel_y += self.gravity
             self.rect.y += self.vel_y
+            self.rect.x = 100
             if self.rect.bottom >= self.ground_y:
                 self.rect.bottom = self.ground_y
                 self.vel_y = 0
             return
 
-        # Aplica gravidade e movimento vertical
+        # Aplica gravidade
         self.vel_y += self.gravity
         self.rect.y += self.vel_y
 
-        # Checagem de colisão com o chão
+        # Colisão com o chão
         if self.rect.bottom >= self.ground_y:
             self.rect.bottom = self.ground_y
             self.vel_y = 0
             self.is_jumping = False
 
-        # Animações
+        # Animações travando rigorosamente a posição X em 100
         if self.is_jumping:
             self.current_frame += 0.35
             if self.current_frame >= len(self.spin_frames):
                 self.current_frame = 0
-            old_center = self.rect.center
+            old_center_y = self.rect.centery
             self.image = self.spin_frames[int(self.current_frame)]
-            self.rect = self.image.get_rect(center=old_center)
+            self.rect = self.image.get_rect()
+            self.rect.x = 100
+            self.rect.centery = old_center_y
             self.mask = pygame.mask.from_surface(self.image)
         elif not self.is_ducking:
             self.current_frame += self.animation_speed
             if self.current_frame >= len(self.run_frames):
                 self.current_frame = 0
-            old_x = self.rect.x
             self.image = self.run_frames[int(self.current_frame)]
-            # Trava o pé do Sonic na superfície exata da grama (680)
-            self.rect = self.image.get_rect(bottomleft=(old_x, self.ground_stand))
+            self.rect = self.image.get_rect()
+            self.rect.x = 100
+            self.rect.bottom = self.ground_stand
             self.mask = pygame.mask.from_surface(self.image)
+        else:
+            self.rect.x = 100
+            self.rect.bottom = self.ground_duck
